@@ -34,33 +34,39 @@ export const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         async jwt({ token, user }) {
-            const dbUser = (await db.get(`user:${token.id}`)) as User | null
-
-            if (!dbUser) {
-                //the excalamation sign means that the user is not null for sure
-                token.id = user!.id
-                return token
+          const dbUserResult = (await db.get(`user:${token.id}`)) as
+            | string
+            | null
+    
+          if (!dbUserResult) {
+            if (user) {
+              token.id = user!.id
             }
-
-            return {
-                id: dbUser.id,
-                name: dbUser.name,
-                email: dbUser.email,
-                picture: dbUser.image
-            }
+    
+            return token
+          }
+    
+          const dbUser = JSON.parse(dbUserResult) as User
+    
+          return {
+            id: dbUser.id,
+            name: dbUser.name,
+            email: dbUser.email,
+            picture: dbUser.image,
+          }
         },
         async session({ session, token }) {
-            if (token) {
-                session.user.id = token.id
-                session.user.name = token.name
-                session.user.email = token.email
-                session.user.image = token.picture
-            }
-
-            return session
+          if (token) {
+            session.user.id = token.id
+            session.user.name = token.name
+            session.user.email = token.email
+            session.user.image = token.picture
+          }
+    
+          return session
         },
         redirect() {
-            return '/dashboard'
-        }
-    }
+          return '/dashboard'
+        },
+      },
 }
