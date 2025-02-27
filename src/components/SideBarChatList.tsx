@@ -1,26 +1,70 @@
 'use client'
 
-import { chatHrefContructor } from '@/lib/utils'
+import { pusherClient } from '@/lib/pusher'
+import { chatHrefContructor, toPusherKey } from '@/lib/utils'
 import { usePathname, useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import UnseenChatToast from './UnseenChatToast'
 
 interface SideBarChatListProps {
     friends: User[]
     sessionId: string
 }
 
+interface extendedMessage extends Message {
+    senderImg: string
+    senderName: string
+}
+
 const SideBarChatList: FC<SideBarChatListProps> = ({ friends, sessionId }) => {
     const [unseenMessages, setUnseenMessages] = useState<Message[]>([])
     const router = useRouter()
-    const pathName = usePathname()
+    const pathname = usePathname()
 
     useEffect(() => {
-        if (pathName?.includes('chat')) {
+        if (pathname?.includes('chat')) {
             setUnseenMessages((prev) => {
-                return prev.filter((msg) => !pathName.includes(msg.senderId))
+                return prev.filter((msg) => !pathname.includes(msg.senderId))
             })
         }
-    }, [pathName])
+
+        pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`))
+        pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
+
+        const newFriendHandler = (newMessage: Message) => {
+            router.refresh()
+        }
+
+        const chatHandler = (message: extendedMessage) => {
+            const shouldNotify = pathname !== `/dashboard/chat/${chatHrefContructor(sessionId, message.senderId)}`
+
+            if (!shouldNotify) return
+
+            // should notify
+            toast.custom((t) => (
+                // custom component
+                <UnseenChatToast 
+                    senderImg={message.senderImg} 
+                    senderMessage={message.text} 
+                    sessionId={sessionId} 
+                    senderName={message.senderName} 
+                    t={t} 
+                    senderId={message.senderId} 
+                />
+            ))
+
+            setUnseenMessages((prev) => [...prev, message])
+        }
+
+        pusherClient.bind('new_message', chatHandler)
+        pusherClient.bind('new_friend', newFriendHandler)
+
+        return () => {
+            pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`))
+            pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`))
+        }
+    }, [pathname])
 
     return <ul role='list' className='max-h-[25rem] overflow-y-auto -mx-2 space-y-1'>
         {friends.sort().map((friend) => {
