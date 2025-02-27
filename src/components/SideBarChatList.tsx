@@ -64,7 +64,7 @@ const SideBarChatList: FC<SideBarChatListProps> = ({ friends, sessionId }) => {
             pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`))
             pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`))
         }
-    }, [pathname])
+    }, [pathname, sessionId, router])
 
     return <ul role='list' className='max-h-[25rem] overflow-y-auto -mx-2 space-y-1'>
         {friends.sort().map((friend) => {
