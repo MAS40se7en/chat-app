@@ -40,7 +40,7 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId }) => {
             <TextareaAutosize ref={textareaRef} onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault()
-                    sendMessage
+                    sendMessage()
                 }
             }}
                 rows={1}

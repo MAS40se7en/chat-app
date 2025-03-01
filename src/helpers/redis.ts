@@ -25,6 +25,7 @@ export async function fetchRedis(
 
         return data.result;
     } catch (error) {
+        console.log("error", error);
         return new Response('Error executing Redis command', { status: 500 })
     }
 }

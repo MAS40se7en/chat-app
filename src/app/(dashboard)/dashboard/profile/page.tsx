@@ -1,17 +1,12 @@
 import { fetchRedis } from '@/helpers/redis';
 import { authOptions } from '@/lib/auth'
 import { getServerSession } from 'next-auth'
-import { notFound, useRouter } from 'next/navigation';
-import { FC } from 'react'
+import { notFound } from 'next/navigation';
 import Image from 'next/image'
-import Button from '@/components/ui/Button';
 import DeleteAccount from '@/components/DeleteAccount';
 
-interface pageProps {
 
-}
-
-const page: FC<pageProps> = async ({ }) => {
+const page = async () => {
     const session = await getServerSession(authOptions);
 
     if (!session) notFound();
@@ -42,7 +37,7 @@ const page: FC<pageProps> = async ({ }) => {
             </div>
         </div>
         <div className='ml-24'>
-            <DeleteAccount email={parsedUser.email} />
+            <DeleteAccount id={parsedUser.id} />
         </div>
     </div>
 }
