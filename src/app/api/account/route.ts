@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { z } from "zod";
 
 export async function DELETE(req: Request) {
     const data = await req.json();

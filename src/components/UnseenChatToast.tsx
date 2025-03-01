@@ -1,4 +1,4 @@
-import { chatHrefContructor, cn } from '@/lib/utils'
+import { chatHrefConstructor, cn } from '@/lib/utils'
 import Image from 'next/image'
 import { FC } from 'react'
 import toast, { Toast } from 'react-hot-toast'
@@ -17,7 +17,7 @@ const UnseenChatToast: FC<UnseenChatToastProps> = ({t, sessionId, senderId, send
     'animate-enter': t.visible,
     'animate-leave': !t.visible
   })}>
-    <a className='flex-1 w-0 p-4' onClick={() => toast.dismiss(t.id)} href={`/dasboard/chat/${chatHrefContructor(sessionId, senderId)}`}>
+    <a className='flex-1 w-0 p-4' onClick={() => toast.dismiss(t.id)} href={`/dasboard/chat/${chatHrefConstructor(sessionId, senderId)}`}>
         <div className='flex items-start'>
             <div className='flex-shrink-0 pt-0.5'>
                 <div className='relative h-10 w-10'>

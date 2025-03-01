@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Icon, Icons } from '@/components/Icons'
+import { Icons } from '@/components/Icons'
 import Image from 'next/image'
 import SignoutButton from '@/components/SignoutButton'
 import FriendRequestSideBarOptions from '@/components/FriendRequestsSideBarOptions'
@@ -11,17 +11,14 @@ import { fetchRedis } from '@/helpers/redis'
 import { getFriendsByUserId } from '@/helpers/get-friends-by-user-id'
 import SideBarChatList from '@/components/SideBarChatList'
 import { MessagesSquare } from 'lucide-react'
+import MobileChatLayout from '@/components/MobileChatLayout'
+import { SidebarOption } from '@/types/typings'
 
 interface LayoutProps {
     children: ReactNode
 }
 
-interface SidebarOption {
-    id: number
-    name: string
-    href: string
-    Icon: Icon
-}
+
 
 const sidebarOptions: SidebarOption[] = [
     {
@@ -43,7 +40,15 @@ const Layout = async ({ children }: LayoutProps) => {
 
     const unseenRequestCount = (await fetchRedis('smembers', `user:${session.user.id}:incoming_friend_requests`) as User[]).length
     return <div className='w-full flex h-screen  bg-gray-100'>
-        <div className='flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6'>
+        <div className='md:hidden'>
+            <MobileChatLayout
+                friends={friends}
+                session={session}
+                sidebarOptions={sidebarOptions}
+                unseenRequestCount={unseenRequestCount}
+            />
+        </div>
+        <div className='hidden md:flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6'>
             <Link href={'/dashboard'} className='flex h-16 shrink-0 items-center'>
                 <MessagesSquare className='h-10 w-auto text-indigo-800' />
             </Link>
@@ -119,7 +124,7 @@ const Layout = async ({ children }: LayoutProps) => {
             </nav>
 
         </div>
-        <aside className='max-h-screen container py-16 md:py-12 w-full'>
+        <aside className='max-h-screen container pt-16 pb-3 md:py-12 w-full'>
             {children}
         </aside>
     </div>

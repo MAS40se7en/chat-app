@@ -1,7 +1,7 @@
 'use client'
 
 import { pusherClient } from '@/lib/pusher'
-import { chatHrefContructor, toPusherKey } from '@/lib/utils'
+import { chatHrefConstructor, toPusherKey } from '@/lib/utils'
 import { usePathname, useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -37,7 +37,7 @@ const SideBarChatList: FC<SideBarChatListProps> = ({ friends, sessionId }) => {
         }
 
         const chatHandler = (message: extendedMessage) => {
-            const shouldNotify = pathname !== `/dashboard/chat/${chatHrefContructor(sessionId, message.senderId)}`
+            const shouldNotify = pathname !== `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`
 
             if (!shouldNotify) return
 
@@ -73,7 +73,7 @@ const SideBarChatList: FC<SideBarChatListProps> = ({ friends, sessionId }) => {
             }).length
 
             return (<li key={friend.id}>
-                <a href={`/dashboard/chat/${chatHrefContructor(
+                <a href={`/dashboard/chat/${chatHrefConstructor(
                     sessionId,
                     friend.id
                 )}`} className='text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'>
